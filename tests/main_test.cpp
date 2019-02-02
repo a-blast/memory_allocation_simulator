@@ -4,7 +4,6 @@
 
 # include "../FrameAllocator.h"
 
-namespace {
 
 TEST(FrameAllocator, Construction){
   FrameAllocator allocator(3);
