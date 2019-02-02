@@ -11,6 +11,7 @@ class FrameAllocator {
 public:
   FrameAllocator(uint64_t numPageFrames);
 
+  virtual ~FrameAllocator();
   
   FrameAllocator(const FrameAllocator &orig) = delete;
   FrameAllocator(FrameAllocator &&orig) = delete;
