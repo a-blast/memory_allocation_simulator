@@ -22,6 +22,13 @@ TEST(FrameAllocator, Construction){
   EXPECT_EQ(valToTest,allocator.memory[3]);
 
   // test page zero initialization
+  allocator.set_page_zero(valToSet,valToSet,valToSet);
+  for(int i = 0; i<12; i++){
+    EXPECT_EQ(valToTest, allocator.memory[i]);
+  };
+
+  // test get_uint32 from memory
+  EXPECT_EQ(valToSet, allocator.get_uint32_from_mem(0));
 
 }
 

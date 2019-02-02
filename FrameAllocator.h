@@ -30,8 +30,8 @@ private:
   // second 4 bits:
   std::vector<uint8_t> memory;
   static const int page_frames_total_offset = 0;
-  static const int page_frames_available_offset = 32;
-  static const int available_list_head_offset = 64;
+  static const int page_frames_available_offset = 4;
+  static const int available_list_head_offset = 8;
 
   // helper functions
   // accessible by gtest unit testing class
@@ -42,8 +42,9 @@ private:
                      uint32_t available_list_head
                      );
 
+
   void set_mem_from_uint32(uint32_t index, uint32_t valToSet);
-  void get_uint32_from_mem(uint32_t index) const;
+  uint32_t get_uint32_from_mem(uint32_t index) const;
 
 };
 

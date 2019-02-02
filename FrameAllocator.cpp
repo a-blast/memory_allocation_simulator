@@ -12,12 +12,21 @@ void FrameAllocator::set_mem_from_uint32(uint32_t index, uint32_t valToSet){
     this->memory[index+uint8Index] = out;
 
     //prints intermediate bit shifted values
-    // std::cout << unsigned(uint8Index) << "\n"
+    // std::cout << unsigned(uint8Index) << "+" << unsigned(index) << "\n"
     //           << "i: " << std::bitset<32>(index) << "\n"
     //           << "l: " << std::bitset<32>(leftShift) << "\n"
     //           << "O: " << std::bitset<8>(out) << "\n";
   }
 }
+
+uint32_t FrameAllocator::get_uint32_from_mem(uint32_t start) const {
+  uint32_t val(0);
+  for(int index=0; index<4;index++){
+    val |= (this->memory[start+index] << (index*8));
+  }
+  return val;
+}
+
 
 
 
@@ -37,7 +46,7 @@ FrameAllocator::FrameAllocator(uint32_t numPageFrames)
 
   // std::cout << std::bitset<8>(memory[tailLinkAddr]) << "\n"
   //           << std::bitset<8>(memory[tailLinkAddr]) << "\n";
-  set_page_zero(numPageFrames, numPageFrames-1, 8192);
+  //set_page_zero(numPageFrames, numPageFrames-1, 8192);
 
 
   // for(int index = 0; index <= 16; index++){
