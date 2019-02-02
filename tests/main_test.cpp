@@ -6,7 +6,16 @@
 
 
 TEST(FrameAllocator, Construction){
-  FrameAllocator allocator(3);
+  // Test constructor
+  FrameAllocator allocator(5);
+
+  // Test linked list addresses:
+  std::vector<uint32_t> llAdr = {8192,16384,24576,32768};
+  EXPECT_EQ(llAdr[0],
+            allocator.get_uint32_from_mem(allocator.available_list_head_offset));
+
+
+
   // Test that the memory vector is properly initialized
   // & can be checked via get_available
 
@@ -29,6 +38,14 @@ TEST(FrameAllocator, Construction){
 
   // test get_uint32 from memory
   EXPECT_EQ(valToSet, allocator.get_uint32_from_mem(0));
+
+  // test the Allocator
+  std::vector<uint32_t> page_frames_out;
+  std::vector<uint32_t> page_frames_expected = {8192,16384,24576};
+  uint32_t numPages = 3;
+  std::cout << page_frames_expected[0]<<"\n";
+
+  allocator.Allocate(numPages, page_frames_out);
 
 }
 

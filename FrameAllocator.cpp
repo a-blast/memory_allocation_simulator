@@ -12,10 +12,10 @@ void FrameAllocator::set_mem_from_uint32(uint32_t index, uint32_t valToSet){
     this->memory[index+uint8Index] = out;
 
     //prints intermediate bit shifted values
-    // std::cout << unsigned(uint8Index) << "+" << unsigned(index) << "\n"
-    //           << "i: " << std::bitset<32>(index) << "\n"
-    //           << "l: " << std::bitset<32>(leftShift) << "\n"
-    //           << "O: " << std::bitset<8>(out) << "\n";
+    std::cout << unsigned(uint8Index) << "+" << unsigned(index) << "\n"
+              << "i: " << std::bitset<32>(index) << "\n"
+              << "l: " << std::bitset<32>(leftShift) << "\n"
+              << "O: " << std::bitset<8>(out) << "\n";
   }
 }
 
@@ -74,6 +74,7 @@ bool FrameAllocator::Allocate(uint32_t count, std::vector<uint32_t> &page_frames
   uint32_t pageAddr = get_uint32_from_mem(available_list_head_offset);
   while(count>0){
     page_frames.push_back(pageAddr);
+    std::cout << std::hex << pageAddr << "\n";
     pageAddr = get_uint32_from_mem(pageAddr);
   }
   // Set the head to point at the next available pageAddr
