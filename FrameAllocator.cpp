@@ -46,7 +46,7 @@ FrameAllocator::FrameAllocator(uint32_t numPageFrames)
 
   // std::cout << std::bitset<8>(memory[tailLinkAddr]) << "\n"
   //           << std::bitset<8>(memory[tailLinkAddr]) << "\n";
-  //set_page_zero(numPageFrames, numPageFrames-1, 8192);
+  set_page_zero(numPageFrames, numPageFrames-1, 8192);
 
 
   // for(int index = 0; index <= 16; index++){
@@ -65,7 +65,18 @@ void FrameAllocator::set_page_zero(uint32_t page_frames_total,
 }
 
 uint32_t FrameAllocator::get_available() const {
+}
 
-  
 
+bool FrameAllocator::Allocate(uint32_t count, std::vector<uint32_t> &page_frames){
+  uint32_t availablePageFrames = get_uint32_from_mem(page_frames_available_offset);
+  if(count > availablePageFrames){return false;};
+  uint32_t pageAddr = get_uint32_from_mem(available_list_head_offset);
+  while(count>0){
+    page_frames.push_back(pageAddr);
+    pageAddr = get_uint32_from_mem(pageAddr);
+  }
+  // Set the head to point at the next available pageAddr
+  set_mem_from_uint32(available_list_head_offset, pageAddr);
+  return true;
 }
