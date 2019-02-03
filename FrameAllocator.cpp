@@ -3,6 +3,8 @@
 # include <stdint.h>
 # include <algorithm>
 # include <iostream>
+# include <iomanip>
+# include <sstream>
 # include <bitset>
 # include <string>
 
@@ -75,6 +77,15 @@ uint32_t FrameAllocator::get_available() const {
   return get_uint32_from_mem(page_frames_available_offset);
 }
 
+std::string FrameAllocator::get_available_list_string() const {
+  uint32_t nextPage = get_uint32_from_mem(available_list_head_offset);
+  std::stringstream out;
+  while(nextPage != ~(uint32_t(0))){
+    out << " " << std::hex << nextPage;
+    nextPage = get_uint32_from_mem(nextPage);
+  }
+  return out.str();
+}
 
 // returns false if there arent enough pages or the page count
 // goes over the page_frames_total

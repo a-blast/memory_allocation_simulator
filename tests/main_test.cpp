@@ -66,9 +66,10 @@ TEST(FrameAllocator, Construction){
   page_frames_expected.pop_back();
   EXPECT_EQ(true, allocator2.Release(numPagesRelease, page_frames_out));
   EXPECT_EQ(page_frames_expected, page_frames_out);
-  // TODO test linked list that results from the releaser
 
-  
+  // test the get_available_list_string function post release
+  std::string expectedString = " 6000 8000 a000 c000 e000";
+  EXPECT_EQ(expectedString, allocator2.get_available_list_string());
 
 
 
