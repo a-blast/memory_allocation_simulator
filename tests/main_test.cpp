@@ -39,13 +39,16 @@ TEST(FrameAllocator, Construction){
   // test get_uint32 from memory
   EXPECT_EQ(valToSet, allocator.get_uint32_from_mem(0));
 
+  FrameAllocator allocator2(8);
   // test the Allocator
   std::vector<uint32_t> page_frames_out;
   std::vector<uint32_t> page_frames_expected = {8192,16384,24576};
   uint32_t numPages = 3;
-  std::cout << page_frames_expected[0]<<"\n";
 
-  allocator.Allocate(numPages, page_frames_out);
+  EXPECT_EQ(true, allocator2.Allocate(numPages, page_frames_out));
+  EXPECT_EQ(page_frames_expected, page_frames_out);
+
+
 
 }
 
