@@ -20,6 +20,7 @@ std::vector<std::string> tokenizer(std::string line){
     tokensOut.push_back(token);
     line.erase(0, pos + 1);
   }
+  tokensOut.push_back(line);
   return tokensOut;
 }
 
@@ -30,7 +31,13 @@ int main(int argc, char* argv[]){
     throw std::runtime_error("Failed to open file, does it exist?");
   }
 
-  auto printLine = [](std::string line){std::cout << "|" << line <<"\n";};
+  auto printCommandLine = [](std::string line){std::cout << "|" << line <<"\n";};
+  auto printAllocResult = [](FrameAllocator &alloc, bool result){
+                            uint32_t pagesAvail = alloc.get_available();
+                            std::cout << (result ? " T ":" F ")
+                                      << std::hex << pagesAvail << "\n";
+                          };
+
   std::string line;
   std::getline(fileStream, line);
   uint32_t pages = std::stoi(line);
@@ -38,17 +45,33 @@ int main(int argc, char* argv[]){
 
   std::vector<std::vector<uint32_t>> processes;
 
-  printLine(line);
+  printCommandLine(line);
 
   for(std::string line; std::getline(fileStream, line);){
     std::vector<std::string> tokens = tokenizer(line);
-    printLine(line);
-    std::cout << tokens[0] << "\n";
-    //std::cout << tokens.size() <<"\n";
+    printCommandLine(line);
+
     if(tokens[0] == "P"){
       std::cout << alloc.get_available_list_string() <<"\n";
+      continue;
     }
 
+    uint32_t processNum = std::stoi(tokens[1]);
+    uint32_t pages = std::stoi(tokens[2]);
+
+
+    if(processes.size() < processNum+1){
+      processes.push_back(std::vector<uint32_t>());
+    }
+
+    bool result;
+
+    if(tokens[0] == "A"){
+      result = alloc.Allocate(pages, processes[processNum]);
+    }else if(tokens[0] == "R"){
+      result = alloc.Release(pages, processes[processNum]);
+    }
+    printAllocResult(alloc,result);
   }
 
   return(0);
