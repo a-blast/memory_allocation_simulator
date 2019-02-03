@@ -71,7 +71,9 @@ TEST(FrameAllocator, Construction){
   std::string expectedString = " c000 10000 14000 18000 1c000";
   EXPECT_EQ(expectedString, allocator2.get_available_list_string());
 
-
+  FrameAllocator allocator3(16);
+  EXPECT_EQ(" 4000 8000 c000 10000 14000 18000 1c000 20000 24000 28000 2c000 30000 34000 38000 3c000",
+            allocator3.get_available_list_string());
 
 
 }

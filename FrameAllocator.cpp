@@ -13,26 +13,14 @@ void FrameAllocator::set_mem_from_uint32(uint32_t index, uint32_t valToSet){
     uint32_t leftShift = valToSet << (uint8Index*8);
     uint8_t out = leftShift >> 24;
     this->memory[index+uint8Index] = out;
-
-    //prints intermediate bit shifted values
-    // std::cout << unsigned(uint8Index) << "+" << unsigned(index) << "\n"
-    //           << "i: " << std::bitset<32>(index) << "\n"
-    //           << "l: " << std::bitset<32>(leftShift) << "\n"
-    //           << "O: " << std::bitset<8>(out) << "\n";
   }
 }
 
 uint32_t FrameAllocator::get_uint32_from_mem(uint32_t start) const {
   uint32_t val(0);
   for(int index=0; index<4;index++){
-
     val |= (this->memory[start+index] << ((3-index)*8));
-
-    // std::cout << std::bitset<8>(memory[start+index]) << " ";
-
   }
-  // std::cout << "\n";
-  // std::cout << std::bitset<32>(val) << "?\n";
   return val;
 }
 
@@ -41,28 +29,11 @@ FrameAllocator::FrameAllocator(uint32_t numPageFrames)
   for(uint32_t index = 16384; index <= (numPageFrames-1)*16384; index += 16384){
     uint32_t link = 16384+index;
     this->set_mem_from_uint32(index, link);
-    // prints index bits
-    // std::cout << std::bitset<8>(memory[index]) << "\n "
-    //           << std::bitset<8>(memory[index+1]) << "\n ";
   }
-  //set_mem_from_uint32(index, ~(uint32_t(0)));
-  // set the bits in the tail ref
-
   uint32_t tailLinkAddr  = (numPageFrames-1)*16384;
-  memory[tailLinkAddr]   = ~(uint8_t(0));
-  memory[tailLinkAddr+1] = ~(uint8_t(0));
-  memory[tailLinkAddr+2] = ~(uint8_t(0));
-  memory[tailLinkAddr+3] = ~(uint8_t(0));
+  set_mem_from_uint32(tailLinkAddr, ~(uint32_t(0)));
 
-  // std::cout << std::bitset<8>(memory[tailLinkAddr]) << "\n"
-  //           << std::bitset<8>(memory[tailLinkAddr]) << "\n";
   set_page_zero(numPageFrames, numPageFrames-1, 16384);
-
-  // for(int index = 0; index <= 16; index++){
-  //   std::cout << std::bitset<8>(memory[index]);
-  //   if(((index+1)%4)==0){ std::cout << "\n";};
-  // };
-
 }
 
 void FrameAllocator::set_page_zero(uint32_t page_frames_total,
@@ -89,7 +60,7 @@ std::string FrameAllocator::get_available_list_string() const {
 
 // returns false if there arent enough pages or the page count
 // goes over the page_frames_total
-bool FrameAllocator::update_avail_page_count(int changeInPageCount){
+bool FrameAllocator::update_avail_page_count(signed int changeInPageCount){
   uint32_t numPages = get_uint32_from_mem(page_frames_available_offset);
   uint32_t maxPages = get_uint32_from_mem(page_frames_total_offset);
 
@@ -106,12 +77,10 @@ bool FrameAllocator::Allocate(uint32_t count, std::vector<uint32_t> &page_frames
   if(count > availablePageFrames){return false;};
   uint32_t pageAddr = get_uint32_from_mem(available_list_head_offset);
 
-  update_avail_page_count(-count);
+  update_avail_page_count(-signed(count));
 
   while(count>0){
     page_frames.push_back(pageAddr);
-    //std::cout << std::bitset<32>(pageAddr) << "\n";
-    //std::cout << std::hex << pageAddr << "!!!\n";
     pageAddr = get_uint32_from_mem(pageAddr);
     count--;
   }
@@ -121,12 +90,12 @@ bool FrameAllocator::Allocate(uint32_t count, std::vector<uint32_t> &page_frames
 }
 
 bool FrameAllocator::Release(uint32_t count, std::vector<uint32_t> &page_frames){
+
   if(count>page_frames.size()){return false;};
-  update_avail_page_count(count);
+  update_avail_page_count(signed(count));
   while(count>0){
     uint32_t addrToFree = page_frames.back();
     page_frames.pop_back();
-    // insert the newly opened page between the link of the head & the first open page
     uint32_t firstOpenPage = get_uint32_from_mem(available_list_head_offset);
     set_mem_from_uint32(addrToFree, firstOpenPage);
     set_mem_from_uint32(available_list_head_offset, addrToFree);
