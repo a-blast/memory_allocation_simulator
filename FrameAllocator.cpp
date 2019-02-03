@@ -4,6 +4,7 @@
 # include <algorithm>
 # include <iostream>
 # include <bitset>
+# include <string>
 
 void FrameAllocator::set_mem_from_uint32(uint32_t index, uint32_t valToSet){
   for(uint8_t uint8Index = 0; uint8Index < 4; uint8Index++){
@@ -71,7 +72,9 @@ void FrameAllocator::set_page_zero(uint32_t page_frames_total,
 }
 
 uint32_t FrameAllocator::get_available() const {
+  return get_uint32_from_mem(page_frames_available_offset);
 }
+
 
 // returns false if there arent enough pages or the page count
 // goes over the page_frames_total
@@ -92,6 +95,7 @@ bool FrameAllocator::Allocate(uint32_t count, std::vector<uint32_t> &page_frames
   if(count > availablePageFrames){return false;};
   uint32_t pageAddr = get_uint32_from_mem(available_list_head_offset);
 
+  update_avail_page_count(-count);
 
   while(count>0){
     page_frames.push_back(pageAddr);
@@ -107,6 +111,7 @@ bool FrameAllocator::Allocate(uint32_t count, std::vector<uint32_t> &page_frames
 
 bool FrameAllocator::Release(uint32_t count, std::vector<uint32_t> &page_frames){
   if(count>page_frames.size()){return false;};
+  update_avail_page_count(count);
   while(count>0){
     uint32_t addrToFree = page_frames.back();
     page_frames.pop_back();

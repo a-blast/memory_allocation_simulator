@@ -66,7 +66,9 @@ TEST(FrameAllocator, Construction){
   page_frames_expected.pop_back();
   EXPECT_EQ(true, allocator2.Release(numPagesRelease, page_frames_out));
   EXPECT_EQ(page_frames_expected, page_frames_out);
+  // TODO test linked list that results from the releaser
 
+  
 
 
 
