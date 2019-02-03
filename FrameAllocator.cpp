@@ -55,7 +55,6 @@ FrameAllocator::FrameAllocator(uint32_t numPageFrames)
   //           << std::bitset<8>(memory[tailLinkAddr]) << "\n";
   set_page_zero(numPageFrames, numPageFrames-1, 8192);
 
-
   // for(int index = 0; index <= 16; index++){
   //   std::cout << std::bitset<8>(memory[index]);
   //   if(((index+1)%4)==0){ std::cout << "\n";};
@@ -74,11 +73,25 @@ void FrameAllocator::set_page_zero(uint32_t page_frames_total,
 uint32_t FrameAllocator::get_available() const {
 }
 
+// returns false if there arent enough pages or the page count
+// goes over the page_frames_total
+bool FrameAllocator::update_avail_page_count(int changeInPageCount){
+  uint32_t numPages = get_uint32_from_mem(page_frames_available_offset);
+  uint32_t maxPages = get_uint32_from_mem(page_frames_total_offset);
+
+  // cant have negative pages, cant have more than maxPages
+  if((0 > numPages+changeInPageCount)
+     ||((numPages+changeInPageCount) > maxPages)){return false;};
+
+  set_mem_from_uint32(page_frames_available_offset, (numPages+changeInPageCount));
+  return true;
+}
 
 bool FrameAllocator::Allocate(uint32_t count, std::vector<uint32_t> &page_frames){
   uint32_t availablePageFrames = get_uint32_from_mem(page_frames_available_offset);
   if(count > availablePageFrames){return false;};
   uint32_t pageAddr = get_uint32_from_mem(available_list_head_offset);
+
 
   while(count>0){
     page_frames.push_back(pageAddr);
@@ -92,4 +105,17 @@ bool FrameAllocator::Allocate(uint32_t count, std::vector<uint32_t> &page_frames
   return true;
 }
 
+bool FrameAllocator::Release(uint32_t count, std::vector<uint32_t> &page_frames){
+  if(count>page_frames.size()){return false;};
+  while(count>0){
+    uint32_t addrToFree = page_frames.back();
+    page_frames.pop_back();
+    // insert the newly opened page between the link of the head & the first open page
+    uint32_t firstOpenPage = get_uint32_from_mem(available_list_head_offset);
+    set_mem_from_uint32(addrToFree, firstOpenPage);
+    set_mem_from_uint32(available_list_head_offset, addrToFree);
+    count--;
+  }
+  return true;
+}
 

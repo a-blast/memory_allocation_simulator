@@ -7,14 +7,25 @@
 
 TEST(FrameAllocator, Construction){
   // Test constructor
-  FrameAllocator allocator(5);
+  uint32_t pageNumber = 5;
+  FrameAllocator allocator(pageNumber);
 
   // Test linked list addresses:
   std::vector<uint32_t> llAdr = {8192,16384,24576,32768};
   EXPECT_EQ(llAdr[0],
             allocator.get_uint32_from_mem(allocator.available_list_head_offset));
 
+  // Test pageCountUpdate
+  // By default, class should update page count on construction
+  EXPECT_EQ(pageNumber-1,
+            allocator.get_uint32_from_mem(allocator.page_frames_available_offset));
+  // Test updating the page number manually,
+  // should not update to page count greater than maxPages or less than 0
+  EXPECT_EQ(false, allocator.update_avail_page_count(pageNumber+10));
+  EXPECT_EQ(false, allocator.update_avail_page_count(-pageNumber-10));
 
+  EXPECT_EQ(true, allocator.update_avail_page_count(+1));
+  EXPECT_EQ(true, allocator.update_avail_page_count(-3));
 
   // Test that the memory vector is properly initialized
   // & can be checked via get_available
@@ -39,14 +50,23 @@ TEST(FrameAllocator, Construction){
   // test get_uint32 from memory
   EXPECT_EQ(valToSet, allocator.get_uint32_from_mem(0));
 
+  // Define a new FrameAllocator after messing with the old one
   FrameAllocator allocator2(8);
   // test the Allocator
   std::vector<uint32_t> page_frames_out;
   std::vector<uint32_t> page_frames_expected = {8192,16384,24576};
-  uint32_t numPages = 3;
+  uint32_t numPagesAllocate = 3;
 
-  EXPECT_EQ(true, allocator2.Allocate(numPages, page_frames_out));
+  EXPECT_EQ(true, allocator2.Allocate(numPagesAllocate, page_frames_out));
   EXPECT_EQ(page_frames_expected, page_frames_out);
+
+  // test the Releaser
+  uint32_t numPagesRelease = 1;
+  page_frames_expected.pop_back();
+  EXPECT_EQ(true, allocator2.Release(numPagesRelease, page_frames_out));
+  EXPECT_EQ(page_frames_expected, page_frames_out);
+
+
 
 
 

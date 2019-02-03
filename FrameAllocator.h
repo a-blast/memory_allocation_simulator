@@ -46,6 +46,8 @@ private:
   void set_mem_from_uint32(uint32_t index, uint32_t valToSet);
   uint32_t get_uint32_from_mem(uint32_t index) const;
 
+  bool update_avail_page_count(int changeInPageCount);
+
 };
 
 # endif
