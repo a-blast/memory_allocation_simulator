@@ -26,6 +26,7 @@ TEST(FrameAllocator, Construction){
 
   EXPECT_EQ(true, allocator.update_avail_page_count(+1));
   EXPECT_EQ(true, allocator.update_avail_page_count(-3));
+  EXPECT_EQ(2,allocator.get_uint32_from_mem(allocator.page_frames_available_offset));
 
   // Test that the memory vector is properly initialized
   // & can be checked via get_available
