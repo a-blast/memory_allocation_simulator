@@ -37,9 +37,9 @@ uint32_t FrameAllocator::get_uint32_from_mem(uint32_t start) const {
 }
 
 FrameAllocator::FrameAllocator(uint32_t numPageFrames)
-  : memory(numPageFrames*8192) {
-  for(uint32_t index = 8192; index <= (numPageFrames-1)*8192; index += 8192){
-    uint32_t link = 8192+index;
+  : memory(numPageFrames*16384) {
+  for(uint32_t index = 16384; index <= (numPageFrames-1)*16384; index += 16384){
+    uint32_t link = 16384+index;
     this->set_mem_from_uint32(index, link);
     // prints index bits
     // std::cout << std::bitset<8>(memory[index]) << "\n "
@@ -48,7 +48,7 @@ FrameAllocator::FrameAllocator(uint32_t numPageFrames)
   //set_mem_from_uint32(index, ~(uint32_t(0)));
   // set the bits in the tail ref
 
-  uint32_t tailLinkAddr  = (numPageFrames-1)*8192;
+  uint32_t tailLinkAddr  = (numPageFrames-1)*16384;
   memory[tailLinkAddr]   = ~(uint8_t(0));
   memory[tailLinkAddr+1] = ~(uint8_t(0));
   memory[tailLinkAddr+2] = ~(uint8_t(0));
@@ -56,7 +56,7 @@ FrameAllocator::FrameAllocator(uint32_t numPageFrames)
 
   // std::cout << std::bitset<8>(memory[tailLinkAddr]) << "\n"
   //           << std::bitset<8>(memory[tailLinkAddr]) << "\n";
-  set_page_zero(numPageFrames, numPageFrames-1, 8192);
+  set_page_zero(numPageFrames, numPageFrames-1, 16384);
 
   // for(int index = 0; index <= 16; index++){
   //   std::cout << std::bitset<8>(memory[index]);

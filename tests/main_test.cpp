@@ -11,7 +11,7 @@ TEST(FrameAllocator, Construction){
   FrameAllocator allocator(pageNumber);
 
   // Test linked list addresses:
-  std::vector<uint32_t> llAdr = {8192,16384,24576,32768};
+  std::vector<uint32_t> llAdr = {16384,16384*2,16384*3,16384*4};
   EXPECT_EQ(llAdr[0],
             allocator.get_uint32_from_mem(allocator.available_list_head_offset));
 
@@ -55,7 +55,7 @@ TEST(FrameAllocator, Construction){
   FrameAllocator allocator2(8);
   // test the Allocator
   std::vector<uint32_t> page_frames_out;
-  std::vector<uint32_t> page_frames_expected = {8192,16384,24576};
+  std::vector<uint32_t> page_frames_expected = {16384,16384*2,16384*3};
   uint32_t numPagesAllocate = 3;
 
   EXPECT_EQ(true, allocator2.Allocate(numPagesAllocate, page_frames_out));
@@ -68,7 +68,7 @@ TEST(FrameAllocator, Construction){
   EXPECT_EQ(page_frames_expected, page_frames_out);
 
   // test the get_available_list_string function post release
-  std::string expectedString = " 6000 8000 a000 c000 e000";
+  std::string expectedString = " c000 10000 14000 18000 1c000";
   EXPECT_EQ(expectedString, allocator2.get_available_list_string());
 
 
