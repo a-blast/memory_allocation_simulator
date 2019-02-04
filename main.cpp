@@ -8,8 +8,8 @@
 // breaks input lines into  token vectors
 std::vector<std::string> tokenizer(std::string line){
 
-  int pos = 0;
-  std::string token;
+  int                      pos = 0;
+  std::string              token;
   std::vector<std::string> tokensOut;
 
   if(line.size() == 1){
@@ -22,6 +22,7 @@ std::vector<std::string> tokenizer(std::string line){
     tokensOut.push_back(token);
     line.erase(0, pos + 1);
   }
+
   tokensOut.push_back(line);
   return tokensOut;
 }

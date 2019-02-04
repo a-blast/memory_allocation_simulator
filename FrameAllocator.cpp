@@ -65,7 +65,7 @@ bool FrameAllocator::update_avail_page_count(signed int changeInPageCount){
   uint32_t maxPages = get_uint32_from_mem(page_frames_total_offset);
 
   // cant have negative pages, cant have more than maxPages
-  if((0 > numPages+changeInPageCount)
+  if((0 > signed(numPages)+changeInPageCount)
      ||((numPages+changeInPageCount) > maxPages)){return false;};
 
   set_mem_from_uint32(page_frames_available_offset, (numPages+changeInPageCount));
