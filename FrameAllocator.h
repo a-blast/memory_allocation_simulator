@@ -11,7 +11,7 @@ class FrameAllocator {
 public:
   FrameAllocator(uint32_t numPageFrames);
 
-  //~FrameAllocator();
+  ~FrameAllocator(){};
 
   FrameAllocator(const FrameAllocator &orig) = delete;
   FrameAllocator(FrameAllocator &&orig) = delete;
@@ -26,8 +26,6 @@ public:
 
 
 private:
-  // first 4 bits: address to next open page in memory (linked list)
-  // second 4 bits:
   std::vector<uint8_t> memory;
   static const int page_frames_total_offset = 0;
   static const int page_frames_available_offset = 4;
